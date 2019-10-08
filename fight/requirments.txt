@@ -1,0 +1,10 @@
+autopep8==1.4.4
+Django==2.2.6
+django-extensions==2.2.3
+django-mysql==3.2.0
+django-shell-plus==1.1.7
+pycodestyle==2.5.0
+PyMySQL==0.9.3
+pytz==2019.3
+six==1.12.0
+sqlparse==0.3.0
