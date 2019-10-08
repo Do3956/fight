@@ -4,5 +4,5 @@
 ```
 ./manage.py shell
 >>>from person import views
->>>views.have_a_battle(1,2,'turn_base')
+>>>views.have_a_battle(1,2,'random_battle')
 ```
