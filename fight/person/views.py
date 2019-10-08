@@ -2,10 +2,8 @@ import random
 
 from django.shortcuts import render
 from lib.config import config
-from lib.constants import BattleStatus
-from lib.constants import BattleWay
 from django.views.decorators.http import require_POST, require_GET
-
+from person.battle_way import battleWays
 
 # Create your views here.
 
@@ -54,41 +52,16 @@ class Skill(object):
         return self.skill.attack
 
 
-class Battle(object):
-    def __init__(self, fighter_id_1, fighter_id_2):
-        self.battle_status = BattleStatus.prepare
-        self.fighter_1 = Heros(fighter_id_1)
-        self.fighter_2 = Heros(fighter_id_2)
-
-    def hit(self, skill_id, attacker, defender):
-        skill = Skill(skill_id)
-        can_use = skill.can_use(attacker)
-        if not can_use:
-            return
-        hit = skill.cal_hit_num(attacker, defender)
-        defender.add_hp(-hit)
-        return defender.hp
-
-    def random_fight(self):
-        self.battle_status = BattleStatus.ing
-        attacker, defender = self.fighter_1, self.fighter_2
-        while True:
-            hp = self.hit(attacker.random_skill(), attacker, defender)
-            if hp is not None and hp <= 0:
-                self.battle_status = BattleStatus.end
-                return attacker
-            attacker, defender = defender, attacker
-
-
 def have_a_battle(fighter_id_1, fighter_id_2, battle_way):
-    if battle_way[0] == '_' or not battle_way in BattleWay.__dict__:
-        return
+    """
+    have_a_battle(1, 2, 'random_battle')
+    """
+    battle_meth = battleWays.get_way(battle_way)
+    if not battle_meth:
+        return 'error battle_way'
     if not (config.heros.get(fighter_id_1) and config.heros.get(fighter_id_2)):
         return
-    battle = Battle(fighter_id_1, fighter_id_2)
-    winner = battle.random_fight()
+    battle = battle_meth(Heros(fighter_id_1), Heros(fighter_id_2))
+    winner = battle.battle()
     print(f"winner name is {winner.name}")
 
-
-if __name__ == "__main__":
-    random_fight(1, 2)
