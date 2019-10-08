@@ -30,7 +30,6 @@ class Heros(object):
 
     def add_hp(self, hp):
         self.hp += hp
-        print(2222, self.hp)
         if self.hp < 0:
             self.hp = 0
 
