@@ -14,9 +14,16 @@ class ConfigModel(object):
 
 
 class Heros(models.Model, ConfigModel):
+    PROFESSION = (
+        ('can_use', '可以使用'),
+    )
     name = models.CharField('角色名', null=False, max_length=20)
     hp = models.PositiveIntegerField(
         '血量', null=False, default=0)
+    profession = models.CharField(
+        '职业', null=False, choices=PROFESSION, max_length=20)
+
+
 
 
 class Skills(models.Model, ConfigModel):
@@ -24,6 +31,7 @@ class Skills(models.Model, ConfigModel):
         ('can_use', '可以使用'),
     )
     name = models.CharField('角色名', null=False, max_length=20)
+    effect = models.CharField('功能', null=False, max_length=20)
     attack = models.PositiveIntegerField(
         '攻击力', null=False, default=0)
     status = models.CharField(
