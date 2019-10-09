@@ -1,11 +1,12 @@
 from lib.config import config
 import random
 from person.skills import allSkills
+import copy
 
 
 class Hero(object):
     def __init__(self, hero_id):
-        self.data = config.heros.get(hero_id)
+        self.data = copy.deepcopy(config.heros.get(hero_id))
         self.skill_ids = config.hero_skill.get(self.data.id)
         self.skill = None
 

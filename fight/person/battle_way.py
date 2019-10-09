@@ -4,7 +4,7 @@ from person.skills import Skill
 from person.heros import Hero
 
 
-class Battle(object):
+class Battle(ABC):
     def __init__(self, fighter_list):
         self.fighter_list = fighter_list
 

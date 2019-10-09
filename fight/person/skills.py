@@ -1,5 +1,6 @@
 from lib.config import config
 from abc import ABC, abstractmethod
+import copy
 
 
 class Skill(ABC):
@@ -11,7 +12,7 @@ class Skill(ABC):
     """
 
     def __init__(self, skill_id, receiver):
-        self.data = config.skills.get(skill_id)
+        self.data = copy.deepcopy(config.skills.get(skill_id))
         self.receiver = receiver
 
     def can_use(self):
