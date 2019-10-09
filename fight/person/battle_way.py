@@ -1,24 +1,18 @@
 from abc import ABC, abstractmethod
 from lib.constants import BattleStatus
+from person.skills import Skill
+from person.heros import Hero
 
 
-class Battle(ABC):
-    battle_ways = set([])
+class Battle(object):
+    def __init__(self, fighter_list):
+        self.fighter_list = fighter_list
 
-    def __init__(self, fighter_1, fighter_2):
-        self.battle_status = BattleStatus.prepare
-        self.fighter_1 = fighter_1
-        self.fighter_2 = fighter_2
-
-    def hit(self, skill_id, attacker, defender):
-        from person.views import Skill
-        skill = Skill(skill_id)
-        can_use = skill.can_use(attacker)
-        if not can_use:
-            return
-        hit = skill.cal_hit_num(attacker, defender)
-        defender.add_hp(-hit)
-        return defender.hp
+    @abstractmethod
+    def is_finish(self):
+        """
+        具体的结束方式
+        """
 
     @abstractmethod
     def battle(self):
@@ -26,54 +20,40 @@ class Battle(ABC):
         具体的战斗方式
         """
 
+    def is_finish_by_hp(self):
+        """
+        """
+        for hero in self.fighter_list:
+            if hero.data.hp <= 0:
+                return True
+        return False
 
 class RandomBattle(Battle):
     """
     random_battle
     """
 
+    # def __init__(self, fighter_list):
+    #     super(RandomBattle, self).__init__(fighter_list)
+
+    def is_finish(self):
+        return self.is_finish_by_hp()
+
     def battle(self):
-        self.battle_status = BattleStatus.ing
-        attacker, defender = self.fighter_1, self.fighter_2
-        while True:
-            hp = self.hit(attacker.random_skill(), attacker, defender)
-            if hp is not None and hp <= 0:
-                self.battle_status = BattleStatus.end
-                return attacker
+        attacker, defender = self.fighter_list
+        while not self.is_finish():
+            skill_id = attacker.random_skill()
+            attacker.set_skill(skill_id, defender)
+            hit = attacker.fight()
+            defender.add_hp(-hit)
             attacker, defender = defender, attacker
-
-# ---------------具体的类型-------------------
-
-# def is_battle_way(m):
-#     """
-#     module = __import__(get_obj)
-#     """
-#     if not m.endswith("Battle") or m == 'Battle':
-#         return False
-#     print('is_battle_way', m)
-#     m = __import__(f'person.battle_way.{m}')
-#     return m.endswith("Battle") and isinstance(x, Battle)
-
-
-# def get_battle_ways():
-#     battle_ways = {}
-#     print('dir()', dir('battle_way'))
-#     print('dir()', dir('./'))
-#     for m in filter(lambda m: is_battle_way(m), dir('battle_way')):
-#         print('m', m)
-#         m_name = m.lower.insert(-6, '_')
-#         print('m_name', m_name)
-#         battle_ways[m_name] = Class.forName(m)
+        return defender
 
 
 class BattleWays(object):
     battle_ways = {
         'random_battle': RandomBattle,
     }
-
-    @classmethod
-    def get_ways(cls):
-        return cls.battle_ways
 
     @classmethod
     def get_way(cls, way):
