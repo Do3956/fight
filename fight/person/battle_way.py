@@ -2,25 +2,26 @@ from abc import ABC, abstractmethod
 from lib.constants import BattleStatus
 from person.skills import Skill
 from person.heros import Hero
+from lib.config import config
 
 
 class Battle(ABC):
-    def __init__(self, fighter_list):
-        self.fighter_list = fighter_list
+    def __init__(self, fighter_1, fighter_2):
+        self.fighter_list = [fighter_1, fighter_2]
 
-    @abstractmethod
     def is_finish(self):
         """
         具体的结束方式
         """
+        return self._is_finish_by_hp()
 
     @abstractmethod
-    def battle(self):
+    def battle(self) -> Hero:
         """
         具体的战斗方式
         """
 
-    def is_finish_by_hp(self):
+    def _is_finish_by_hp(self):
         """
         """
         for hero in self.fighter_list:
@@ -28,29 +29,22 @@ class Battle(ABC):
                 return True
         return False
 
+
 class RandomBattle(Battle):
     """
     random_battle
     """
 
-    # def __init__(self, fighter_list):
-    #     super(RandomBattle, self).__init__(fighter_list)
-
-    def is_finish(self):
-        return self.is_finish_by_hp()
-
     def battle(self):
         attacker, defender = self.fighter_list
         while not self.is_finish():
-            skill_id = attacker.random_skill()
-            attacker.set_skill(skill_id, defender)
-            hit = attacker.fight()
+            hit = attacker.fight(defender)
             defender.add_hp(-hit)
             attacker, defender = defender, attacker
         return defender
 
 
-class BattleWays(object):
+class BattleManager(object):
     battle_ways = {
         'random_battle': RandomBattle,
     }
@@ -59,5 +53,6 @@ class BattleWays(object):
     def get_way(cls, way):
         return cls.battle_ways.get(way)
 
-
-battleWays = BattleWays()
+    @classmethod
+    def all_ways(cls, way):
+        return cls.battle_ways.keys()

@@ -9,11 +9,12 @@ class Skill(ABC):
     1. 必须有接收者
     2. 必须实现一个以上的命令 abstractmethod
     3. 把该类绑在调用者上面
+
+    根据实际情况调整，不一定要满足所有条件
     """
 
-    def __init__(self, skill_id, receiver):
-        self.data = copy.deepcopy(config.skills.get(skill_id))
-        self.receiver = receiver
+    def __init__(self, skill_id):
+        self.data = config.skills.get(skill_id)
 
     def can_use(self):
         """
@@ -22,36 +23,21 @@ class Skill(ABC):
         return True
 
     @abstractmethod
-    def executeCommand(self):
+    def execute(self, receiver: 'Hero') -> int:
         """
-        具体命令
+        使用技能
+        abstractmethod 必须要有返回值
         """
 
 
-class SkillHit(Skill):
+class Skill1(Skill):
     """
-    伤害技能
     """
 
-    # def __init__(self, skill_id, receiver):
-    #     super(SkillHit, self).__init__(skill_id, receiver)
-
-    def executeCommand(self):
+    def execute(self, receiver: 'Hero'):
         """
-        计算伤害值
+        计算属性
         """
         return self.data.attack
 
 
-class AllSkills(object):
-    skills = {
-        'hit': SkillHit,
-    }
-
-    @classmethod
-    def get_skill_class(cls, skill_id):
-        skill_class = cls.skills.get(config.skills.get(skill_id).effect)
-        return skill_class
-
-
-allSkills = AllSkills()
